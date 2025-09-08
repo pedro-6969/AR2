@@ -22,34 +22,26 @@
     arjs ativa a câmera e tracking.
   -->
   <a-scene
-    vr-mode-ui="enabled: false"
-    embedded
-    arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;"
-  >
-    <!-- Luz para iluminar objetos 3D -->
-    <a-entity light="type: directional; intensity: 0.9" position="1 1 0"></a-entity>
-    <a-entity light="type: ambient; intensity: 0.5"></a-entity>
+  vr-mode-ui="enabled: false"
+  embedded
+  arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;"
+>
+  <a-assets>
+    <!-- carregando o modelo -->
+    <a-asset-item id="meuModelo" src="./assets/source/Gothic_Elegance_0721165114_texture.glb"></a-asset-item>
+  </a-assets>
 
-    <!-- Marcador HIRO pronto (padrão do AR.js) -->
-    <a-marker preset="hiro">
-      <!-- Exemplo simples: um cubo vermelho -->
-      <a-box position="0 0.5 0" rotation="0 45 0" depth="1" height="1" width="1" color="#E53935"></a-box>
+  <a-marker preset="hiro">
+    <!-- aplicando o modelo -->
+    <a-entity 
+      gltf-model="#meuModelo" 
+      scale="0.1 0.2 0.5" 
+      position="0 0 0">
+    </a-entity>
+  </a-marker>
 
-      <!-- Exemplo com texto -->
-      <a-entity position="0 1.2 0" text="value: Olá, AR!; color: #ffffff; align: center;"></a-entity>
-
-      <!--
-      Se quiser carregar um modelo GLB/GLTF:
-      <a-assets>
-        <a-asset-item id="model" src="assets/seu-modelo.glb"></a-asset-item>
-      </a-assets>
-      <a-entity gltf-model="#model" scale="0.5 0.5 0.5" position="0 0 0"></a-entity>
-      -->
-    </a-marker>
-
-    <!-- Necessário para a câmera do AR.js -->
-    <a-entity camera></a-entity>
-  </a-scene>
+  <a-entity camera></a-entity>
+</a-scene>
 
   <div class="hint">Imprima e aponte para o marcador HIRO 😉</div>
 </body>
