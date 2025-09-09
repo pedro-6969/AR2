@@ -1,58 +1,53 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>GeoAR.js demo (GPS AR)</title>
+<script src="https://cdn.jsdelivr.net/gh/aframevr/aframe@1c2407b26c61958baa93967b5412487cd94b290b/dist/aframe-master.min.js"></script>
+<script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
 
-  <!-- A-Frame (recente) -->
-  <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+<style>
+  .arjs-loader {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 
-  <!-- AR.js para A-Frame (inclui gps-camera e gps-entity-place) -->
-  <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar.js"></script>
+  .arjs-loader div {
+    text-align: center;
+    font-size: 1.25em;
+    color: white;
+  }
+</style>
 
-  <!-- aframe-extras para animation-mixer (opcional) -->
-  <script src="https://cdn.jsdelivr.net/npm/aframe-extras@6.1.1/dist/aframe-extras.loaders.min.js"></script>
-
-  <style>
-    html, body { margin:0; padding:0; overflow:hidden; }
-    .hint {
-      position: fixed; left: 10px; bottom: 10px; z-index: 10;
-      background: rgba(0,0,0,.6); color: #fff; padding: 8px 12px; border-radius: 8px;
-      font: 14px/1.3 sans-serif;
-    }
-  </style>
-
-  <script>
-    // Componente simples para ler a rotação da câmera (você usa no <a-camera>)
-    AFRAME.registerComponent('rotation-reader', {
-      tick: function () {
-        const rot = this.el.getAttribute('rotation');
-        // Se quiser debugar:
-        // console.log('camera rotation', rot);
-      }
-    });
-  </script>
-</head>
-
-<body>
-  <div class="hint">Dê permissão de localização e mova-se um pouco; o objeto será ancorado por GPS.</div>
-
+<body style="margin : 0px; overflow: hidden;">
+  <!-- minimal loader shown until image descriptors are loaded -->
+  <div class="arjs-loader">
+    <div>Loading, please wait...</div>
+  </div>
   <a-scene
-    vr-mode-ui="enabled: false"
-    renderer="colorManagement: true; physicallyCorrectLights: true;"
+    vr-mode-ui="enabled: false;"
+    renderer="logarithmicDepthBuffer: true;"
     embedded
-    arjs="sourceType: webcam; debugUIEnabled: false;"
+    arjs="trackingMethod: best; sourceType: webcam;debugUIEnabled: false;"
   >
-    <!-- Luzes básicas -->
-    <a-entity light="type: hemisphere; intensity: 1"></a-entity>
-    <a-entity light="type: directional; intensity: 0.8" position="1 1 0"></a-entity>
-
-    <!-- A câmera com GPS -->
-    <a-camera gps-camera rotation-reader></a-camera>
+    <a-nft
+      type="nft"
+      url="https://raw.githack.com/AR-js-org/AR.js/master/aframe/examples/image-tracking/nft/trex/trex-image/trex"
+      smooth="true"
+      smoothCount="10"
+      smoothTolerance=".01"
+      smoothThreshold="5"
+    >
+      <a-entity
+        gltf-model="https://raw.githack.com/AR-js-org/AR.js/master/aframe/examples/image-tracking/nft/trex/scene.gltf"
+        scale="5 5 5"
+        position="50 150 0"
+      >
+      </a-entity>
+    </a-nft>
+    <a-entity camera></a-entity>
   </a-scene>
-
-  <!-- Seu script de criação dos objetos -->
-  <script src="./script.js"></script>
 </body>
-</html>
