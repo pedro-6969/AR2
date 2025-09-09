@@ -1,66 +1,68 @@
-window.onload = () => {
-  // Esperar a câmera GPS ter uma posição antes de criar os objetos ajuda bastante:
-  window.addEventListener('gps-camera-update-position', (e) => {
-    const { position } = e.detail; // lat/lng do usuário
-    console.log('GPS fix:', position);
-    // Cria os lugares uma única vez
-    if (!window.__placesRendered) {
-      window.__placesRendered = true;
-      const places = staticLoadPlaces();
-      renderPlaces(places);
-    }
-  });
+// getting places from APIs
+function loadPlaces(position) {
+    const params = {
+        radius: 300,    // search places not farther than this value (in meters)
+        clientId: 'MVBNK5KJB3SVVNUREH4LBR5FYMHE3KMG0KOOKM0IFAKYARN2',
+        clientSecret: 'HSPBMCDA4IZWCCIJHWE5RFYOLRLGAVTNRO3KTGR2QOGPPFOZ',
+        version: '20300101',    // foursquare versioning, required but unuseful for this demo
+    };
+
+    // CORS Proxy to avoid CORS problems
+    const corsProxy = 'https://cors-anywhere.herokuapp.com/';
+
+    // Foursquare API (limit param: number of maximum places to fetch)
+    const endpoint = `${corsProxy}https://api.foursquare.com/v2/venues/search?intent=checkin
+        &ll=${position.latitude},${position.longitude}
+        &radius=${params.radius}
+        &client_id=${params.clientId}
+        &client_secret=${params.clientSecret}
+        &limit=30 
+        &v=${params.version}`;
+    return fetch(endpoint)
+        .then((res) => {
+            return res.json()
+                .then((resp) => {
+                    return resp.response.venues;
+                })
+        })
+        .catch((err) => {
+            console.error('Error with places API', err);
+        })
 };
 
-function staticLoadPlaces() {
-  return [
-    {
-      name: 'Magnemite',
-      location: {
-        lat: -23.330583,
-        lng: -47.868354,
-      },
-      // Ajuste o caminho do seu GLTF aqui
-      modelUrl: './assets/magnemite/scene.gltf',
-      scale: '0.5 0.5 0.5',
-      rotation: '0 180 0'
-    }
-  ];
-}
 
-function renderPlaces(places) {
-  const scene = document.querySelector('a-scene');
+window.onload = () => {
+    const scene = document.querySelector('a-scene');
 
-  places.forEach((place) => {
-    const { lat, lng } = place.location;
+    // first get current user location
+    return navigator.geolocation.getCurrentPosition(function (position) {
 
-    const entity = document.createElement('a-entity');
+        // than use it to load from remote APIs some places nearby
+        loadPlaces(position.coords)
+            .then((places) => {
+                places.forEach((place) => {
+                    const latitude = place.location.lat;
+                    const longitude = place.location.lng;
 
-    // Posiciona por GPS
-    entity.setAttribute('gps-entity-place', `latitude: ${lat}; longitude: ${lng};`);
+                    // add place name
+                    const placeText = document.createElement('a-link');
+                    placeText.setAttribute('gps-entity-place', `latitude: ${latitude}; longitude: ${longitude};`);
+                    placeText.setAttribute('title', place.name);
+                    placeText.setAttribute('scale', '15 15 15');
+                    
+                    placeText.addEventListener('loaded', () => {
+                        window.dispatchEvent(new CustomEvent('gps-entity-place-loaded'))
+                    });
 
-    // Carrega modelo (GLTF/GLB)
-    entity.setAttribute('gltf-model', place.modelUrl);
-
-    // Ajustes de exibição
-    entity.setAttribute('rotation', place.rotation || '0 0 0');
-    entity.setAttribute('scale', place.scale || '1 1 1');
-
-    // (Opcional) animações em modelos com animações embutidas
-    entity.setAttribute('animation-mixer', '');
-
-    // Aviso quando o modelo terminar de carregar
-    entity.addEventListener('model-loaded', () => {
-      console.log('Modelo carregado em', lat, lng);
-      // Dispara evento do AR.js (opcional)
-      window.dispatchEvent(new CustomEvent('gps-entity-place-loaded'));
-    });
-
-    // Erros úteis pra debugar caminho/CORS
-    entity.addEventListener('model-error', (e) => {
-      console.error('Erro ao carregar modelo:', e.detail);
-    });
-
-    scene.appendChild(entity);
-  });
-}
+                    scene.appendChild(placeText);
+                });
+            })
+    },
+        (err) => console.error('Error in retrieving position', err),
+        {
+            enableHighAccuracy: true,
+            maximumAge: 0,
+            timeout: 27000,
+        }
+    );
+};
