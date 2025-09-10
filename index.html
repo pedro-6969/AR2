@@ -2,7 +2,6 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <title>GeoAR.js demo</title>
     <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
     <script src="https://unpkg.com/aframe-look-at-component@1.0.0/dist/aframe-look-at-component.min.js"></script>
@@ -14,16 +13,16 @@
       vr-mode-ui="enabled: false"
       arjs="sourceType: webcam; videoTexture: true; debugUIEnabled: false;"
     >
-      <!-- Modelo 3D de carro -->
+      <!-- Primeiro objeto com ID -->
       <a-entity
+        id="primeiro"
         gltf-model="url(https://cdn.jsdelivr.net/gh/KhronosGroup/glTF-Sample-Models@master/2.0/Avocado/glTF-Binary/Avocado.glb)"
         look-at="[gps-camera]"
         scale="30 30 30"
         gps-entity-place="latitude: -23.330538; longitude: -47.868234;"
       ></a-entity>
 
-
-       <!-- Modelo 3D de carro -->
+      <!-- Outros objetos -->
       <a-entity
         gltf-model="url(https://cdn.jsdelivr.net/gh/KhronosGroup/glTF-Sample-Models@master/2.0/Avocado/glTF-Binary/Avocado.glb)"
         look-at="[gps-camera]"
@@ -31,7 +30,6 @@
         gps-entity-place="latitude: -23.346589; longitude: -47.845303;"
       ></a-entity>
 
-       <!-- Modelo 3D de carro -->
       <a-entity
         gltf-model="url(https://cdn.jsdelivr.net/gh/KhronosGroup/glTF-Sample-Models@master/2.0/Avocado/glTF-Binary/Avocado.glb)"
         look-at="[gps-camera]"
@@ -39,7 +37,6 @@
         gps-entity-place="latitude: -23.346618; longitude: -47.845279;"
       ></a-entity>
 
-       <!-- Modelo 3D de carro -->
       <a-entity
         gltf-model="url(https://cdn.jsdelivr.net/gh/KhronosGroup/glTF-Sample-Models@master/2.0/Avocado/glTF-Binary/Avocado.glb)"
         look-at="[gps-camera]"
@@ -47,30 +44,39 @@
         gps-entity-place="latitude: -23.346580; longitude: -47.845248;"
       ></a-entity>
 
-      <!-- Modelo 3D de carro -->
       <a-entity
         gltf-model="url(https://cdn.jsdelivr.net/gh/KhronosGroup/glTF-Sample-Models@master/2.0/Avocado/glTF-Binary/Avocado.glb)"
         look-at="[gps-camera]"
+        id="ultimo"
         scale="30 30 30"
         gps-entity-place="latitude: -23.346495; longitude: -47.845191;"
       ></a-entity>
 
-      <a-camera gps-camera rotation-reader></a-camera>
+      <!-- Câmera com cursor para clique -->
+      <a-camera gps-camera rotation-reader>
+        <a-cursor
+          fuse="false"
+          raycaster="objects: a-entity"
+        ></a-cursor>
+      </a-camera>
     </a-scene>
+
+    <script>
+      // Pega o objeto pelo ID
+      const primeiro = document.querySelector('#primeiro');
+      const ultimo = document.querySelector('#ultimo');
+
+      // Adiciona evento de clique
+      primeiro.addEventListener('click', () => {
+        alert('Você clicou no primeiro objeto!');
+      });
+
+      // Pega o objeto pelo ID
+
+      // Adiciona evento de clique
+      ultimo.addEventListener('click', () => {
+        alert('Você clicou no ultimo objeto!');
+      });
+    </script>
   </body>
 </html>
-<!-- 
-  -23.330519, -47.868196
-
-
-
-
-
-
-
-
-
-
-
-
-  -->
