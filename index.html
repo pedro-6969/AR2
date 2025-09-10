@@ -14,16 +14,15 @@
       vr-mode-ui="enabled: false"
       arjs="sourceType: webcam; videoTexture: true; debugUIEnabled: false;"
     >
-      <a-text
-        value="This content will always face you."
+      <!-- Modelo 3D de carro -->
+      <a-entity
+        gltf-model="url(https://cdn.jsdelivr.net/gh/KhronosGroup/glTF-Sample-Models@master/2.0/Avocado/glTF-Binary/Avocado.glb)"
         look-at="[gps-camera]"
-        scale="120 120 120"
+        scale="30 30 30"
         gps-entity-place="latitude: -23.346472; longitude: -47.845130;"
-      ></a-text>
-      <a-camera gps-camera rotation-reader> </a-camera>
+      ></a-entity>
+
+      <a-camera gps-camera rotation-reader></a-camera>
     </a-scene>
   </body>
 </html>
-<!-- -23.346472, -47.845130
- -23.330464, -47.868124
- -->
