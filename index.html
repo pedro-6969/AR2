@@ -2,82 +2,46 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>GeoAR.js demo</title>
+    <title>GeoAR.js - Location</title>
     <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
-    <script src="https://unpkg.com/aframe-look-at-component@1.0.0/dist/aframe-look-at-component.min.js"></script>
-    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
+    <!-- Build correto para GPS/location-based -->
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
   </head>
-
   <body>
     <a-scene
+      embedded
       vr-mode-ui="enabled: false"
-      arjs="sourceType: webcam; videoTexture: true; debugUIEnabled: false;"
+      renderer="logarithmicDepthBuffer: true;"
+      device-orientation-permission-ui="enabled: true"
+      arjs="sourceType: webcam; trackingMethod: best; videoTexture: true; debugUIEnabled: false;"
     >
-      <!-- Primeiro objeto com ID -->
+      <!-- Seu modelo: começa invisível até o GPS fixar a origem -->
       <a-entity
-        id="primeiro"
+        id="fantasma"
         gltf-model="url(https://ar-2-tau.vercel.app/assets/3december_-fantasy_ghost/scene.gltf)"
-        look-at="[gps-camera]"
         scale="0.01 0.01 0.01"
         gps-entity-place="latitude: -23.330431; longitude: -47.868114;"
-      ></a-entity>
-       
-<!-- -23.330431, -47.868114 -->
-      <!-- Outros objetos -->
-      <a-entity
-        gltf-model="url(https://cdn.jsdelivr.net/gh/KhronosGroup/glTF-Sample-Models@master/2.0/Avocado/glTF-Binary/Avocado.glb)"
-        look-at="[gps-camera]"
-        scale="30 30 30"
-        gps-entity-place="latitude: -23.346589; longitude: -47.845303;"
+        visible="false"
       ></a-entity>
 
-      <a-entity
-        gltf-model="url(https://cdn.jsdelivr.net/gh/KhronosGroup/glTF-Sample-Models@master/2.0/Avocado/glTF-Binary/Avocado.glb)"
-        look-at="[gps-camera]"
-        scale="30 30 30"
-        gps-entity-place="latitude: -23.346618; longitude: -47.845279;"
-      ></a-entity>
-
-      <a-entity
-        gltf-model="url(https://cdn.jsdelivr.net/gh/KhronosGroup/glTF-Sample-Models@master/2.0/Avocado/glTF-Binary/Avocado.glb)"
-        look-at="[gps-camera]"
-        scale="30 30 30"
-        gps-entity-place="latitude: -23.346580; longitude: -47.845248;"
-      ></a-entity>
-
-      <a-entity
-        gltf-model="url(https://cdn.jsdelivr.net/gh/KhronosGroup/glTF-Sample-Models@master/2.0/Avocado/glTF-Binary/Avocado.glb)"
-        look-at="[gps-camera]"
-        id="ultimo"
-        scale="30 30 30"
-        gps-entity-place="latitude: -23.346495; longitude: -47.845191;"
-      ></a-entity>
-
-      <!-- Câmera com cursor para clique -->
-      <a-camera gps-camera rotation-reader>
-        <a-cursor
-          fuse="false"
-          raycaster="objects: a-entity"
-        ></a-cursor>
+      <!-- Câmera com GPS -->
+      <a-camera gps-camera="minDistance: 1; positionMinAccuracy: 1000" rotation-reader>
+        <a-cursor fuse="false" raycaster="objects: a-entity"></a-cursor>
       </a-camera>
     </a-scene>
 
     <script>
-      // Pega o objeto pelo ID
-      const primeiro = document.querySelector('#primeiro');
-      const ultimo = document.querySelector('#ultimo');
+      const fantasma = document.querySelector('#fantasma');
 
-      // Adiciona evento de clique
-      primeiro.addEventListener('click', () => {
-        alert('Você clicou no primeiro objeto!');
+      // Mostra o modelo só depois que a origem GPS for definida
+      window.addEventListener('gps-camera-origin-coord-set', () => {
+        fantasma.setAttribute('visible', true);
       });
 
-      // Pega o objeto pelo ID
-
-      // Adiciona evento de clique
-      ultimo.addEventListener('click', () => {
-        alert('Você clicou no ultimo objeto!');
+      // Clique no modelo
+      fantasma.addEventListener('click', () => {
+        alert('Você clicou no fantasma!');
       });
     </script>
   </body>
-</html>
+</h
