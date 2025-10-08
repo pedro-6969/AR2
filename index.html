@@ -2,21 +2,25 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>GeoAR.js - Diagnóstico</title>
-    <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
-    <!-- Build correto para AR por GPS -->
+    <title>GeoAR.js - Diagnóstico (A-Frame 1.2.0)</title>
+
+    <!-- Use A-Frame 1.2.0 (compatível com AR.js) -->
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+
+    <!-- Build correto do AR.js para A-Frame (GPS) -->
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+
     <style>
-      body, html { margin:0; padding:0; overflow:hidden; }
+      html,body { margin:0; padding:0; height:100%; overflow:hidden; background:#000; }
       #hud {
         position: fixed; left: 8px; top: 8px; z-index: 10;
-        background: rgba(0,0,0,.55); color: #fff; padding: 8px 10px; font: 12px/1.3 monospace;
-        border-radius: 6px;
+        background: rgba(0,0,0,.55); color: #fff;
+        padding: 8px 10px; font: 12px/1.3 monospace; border-radius: 6px;
       }
     </style>
   </head>
   <body>
-    <div id="hud">Aguardando GPS…</div>
+    <div id="hud">Carregando…</div>
 
     <a-scene
       embedded
@@ -25,35 +29,42 @@
       device-orientation-permission-ui="enabled: true"
       arjs="sourceType: webcam; trackingMethod: best; videoTexture: true; debugUIEnabled: false;"
     >
-      <!-- Câmera com GPS -->
-      <a-camera
-        gps-camera="minDistance: 1; positionMinAccuracy: 1000"
-        rotation-reader
-      ></a-camera>
+      <!-- TESTE 0: deve aparecer SEM GPS (prova de renderização) -->
+      <a-box position="0 1.5 -3" depth="1" height="1" width="1" color="#39f"></a-box>
 
-      <!-- MARCADOR DE DIAGNÓSTICO: um cubo bem grande na mesma coordenada -->
-      <a-box id="marcador"
-        gps-entity-place="latitude: -23.330425; longitude: -47.867937;"
-        material="opacity:0.8; transparent:true"
+      <!-- Câmera com GPS -->
+      <a-camera gps-camera="minDistance: 1; positionMinAccuracy: 1500" rotation-reader></a-camera>
+
+      <!-- TESTE 1: objeto GPS simples -->
+      <a-box id="boxGPS"
+        gps-entity-place="latitude: -23.330387; longitude: -47.867990;"
+        material="opacity:0.9; transparent:true"
         color="#00FFAA"
-        depth="5" height="5" width="5"
+        depth="4" height="4" width="4"
         visible="false"
       ></a-box>
 
-      <!-- Seu fantasma (escala maior, e só aparece após origem fixada) -->
+      <!-- TESTE 2: modelo leve GLB (confirma GLTF loader) -->
+      <a-entity id="robot"
+        gps-entity-place="latitude: -23.330387; longitude: -47.867990;"
+        gltf-model="url(https://cdn.aframe.io/test-models/models/RobotExpressive/RobotExpressive.glb)"
+        scale="3 3 3"
+        visible="false"
+      ></a-entity>
+
+      <!-- TESTE 3: seu fantasma (só depois que os de cima aparecem) -->
       <a-entity id="fantasma"
-        gps-entity-place="latitude: -23.330425; longitude: -47.867937;"
+        gps-entity-place="latitude: -23.330387; longitude: -47.867990;"
         gltf-model="url(https://ar-2-tau.vercel.app/assets/3december_-fantasy_ghost/scene.gltf)"
         scale="5 5 5"
         visible="false"
       ></a-entity>
 
-      <!-- Texto 3D no mundo para confirmar renderização -->
       <a-text id="label"
         value="Ponto-alvo"
         align="center"
         color="#ffffff"
-        gps-entity-place="latitude: -23.330425; longitude: -47.867937;"
+        gps-entity-place="latitude: -23.330387; longitude: -47.867990;"
         visible="false"
       ></a-text>
     </a-scene>
@@ -61,47 +72,30 @@
     <script>
       const hud = document.getElementById('hud');
       const cam = document.querySelector('[gps-camera]');
-      const marcador = document.getElementById('marcador');
+      const boxGPS = document.getElementById('boxGPS');
+      const robot = document.getElementById('robot');
       const fantasma = document.getElementById('fantasma');
       const label = document.getElementById('label');
 
-      // Quando a origem GPS for definida, mostramos os objetos
-      window.addEventListener('gps-camera-origin-coord-set', (e) => {
-        const { latitude, longitude, positionMinAccuracy } = cam.components['gps-camera'].data;
-        hud.textContent = `Origem GPS definida. Acc máx: ${positionMinAccuracy}m. Ande até o ponto.`;
-        marcador.setAttribute('visible', true);
+      const log = (t) => hud.textContent = t;
+
+      // 1) Origem definida -> mostramos o box GPS e o label
+      window.addEventListener('gps-camera-origin-coord-set', () => {
+        log('Origem GPS definida. Aguardando posição…');
+        boxGPS.setAttribute('visible', true);
         label.setAttribute('visible', true);
-
-        // Damos um tempinho a mais pro modelo carregar e, então, mostramos
-        // Se o modelo for pesado, aumentar este timeout pode ajudar.
-        setTimeout(() => {
-          fantasma.setAttribute('visible', true);
-        }, 1500);
+        // Damos 1,5s para loaders de modelo inicializarem
+        setTimeout(() => robot.setAttribute('visible', true), 1500);
+        setTimeout(() => fantasma.setAttribute('visible', true), 3000);
       });
 
-      // Atualizações de posição da câmera
+      // 2) Atualização de posição -> mostra precisão
       window.addEventListener('gps-camera-update-position', (e) => {
-        const { position } = e.detail; // {longitude, latitude, accuracy}
-        hud.textContent = `GPS: lat ${position.latitude.toFixed(6)}, lon ${position.longitude.toFixed(6)} (±${position.accuracy|0}m)`;
+        if (!e.detail || !e.detail.position) return;
+        const p = e.detail.position;
+        log(`GPS: lat ${p.latitude.toFixed(6)}, lon ${p.longitude.toFixed(6)} (±${p.accuracy|0}m)`);
       });
 
-      // Distância até o marcador (se disponível)
-      window.addEventListener('gps-entity-place-update-positon', (e) => {
-        // Alguns builds disparam 'gps-entity-place-update-positon' (com 'positon' mesmo).
-        if (e.detail && typeof e.detail.distance === 'number') {
-          hud.textContent += ` | Distância ao alvo: ${e.detail.distance.toFixed(1)}m`;
-        }
-      });
-
-      // Clique de teste
-      fantasma.addEventListener('click', () => alert('Fantasma clicado!'));
-      marcador.addEventListener('click', () => alert('Marcador clicado!'));
-
-      // Logs úteis
+      // Logs úteis no console
       ['gps-camera-origin-coord-set','gps-camera-update-position','gps-entity-place-add']
-        .forEach(ev => window.addEventListener(ev, (e) => console.log('[EVT]', ev, e.detail || '')));
-
-      // Dica: se nada aparecer após 30–60s, abra o console do navegador (remoto) e verifique os logs acima
-    </script>
-  </body>
-</html>
+        .forEach(ev => window.addEventListener(ev, (e) =
