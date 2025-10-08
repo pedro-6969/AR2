@@ -37,26 +37,26 @@
 
       <!-- TESTE 1: objeto GPS simples -->
       <a-box id="boxGPS"
-        gps-entity-place="latitude: -23.330387; longitude: -47.867990;"
+        gps-entity-place="latitude: -23.330425; longitude: -47.867937;"
         material="opacity:0.9; transparent:true"
         color="#00FFAA"
-        depth="4" height="4" width="4"
+        depth="1" height="1" width="1"
         visible="false"
       ></a-box>
 
       <!-- TESTE 2: modelo leve GLB (confirma GLTF loader) -->
       <a-entity id="robot"
-        gps-entity-place="latitude: -23.330387; longitude: -47.867990;"
+        gps-entity-place="latitude: -23.330425; longitude: -47.867937;"
         gltf-model="url(https://cdn.aframe.io/test-models/models/RobotExpressive/RobotExpressive.glb)"
-        scale="3 3 3"
+        scale="1 1 1"
         visible="false"
       ></a-entity>
 
       <!-- TESTE 3: seu fantasma (só depois que os de cima aparecem) -->
       <a-entity id="fantasma"
-        gps-entity-place="latitude: -23.330387; longitude: -47.867990;"
+        gps-entity-place="latitude: -23.330425; longitude: -47.867937;"
         gltf-model="url(https://ar-2-tau.vercel.app/assets/3december_-fantasy_ghost/scene.gltf)"
-        scale="5 5 5"
+        scale="0.2 0.2 0.2"
         visible="false"
       ></a-entity>
 
