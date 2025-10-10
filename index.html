@@ -37,19 +37,31 @@
 
   
     <a-nft
-  type="nft"
-  url="https://diogopcs.github.io/AR2/foto/foto"
-  smooth="true"
-  smoothCount="10"
-  smoothTolerance=".01"
-  smoothThreshold="5"
->
-  <a-entity
-    gltf-model="https://diogopcs.github.io/AR2/foto/scene.gltf"
-    scale="1 1 1"
-    position="50 50 0">
-  </a-entity>
-</a-nft>
-    <a-entity camera></a-entity>
+      type="nft"
+      url="https://diogopcs.github.io/AR2/foto/foto"
+      smooth="true"
+      smoothCount="10"
+      smoothTolerance=".01"
+      smoothThreshold="5"
+    >
+      <a-entity
+        gltf-model="https://diogopcs.github.io/AR2/foto/scene.gltf"
+        scale="1 1 1"
+        position="50 50 0"
+        id="primeiro"
+        >
+      </a-entity>
+    </a-nft>
+        <a-entity camera></a-entity>
   </a-scene>
+
+   <script>
+      // Pega o objeto pelo ID
+      const primeiro = document.querySelector('#primeiro');
+
+      // Adiciona evento de clique
+      primeiro.addEventListener('click', () => {
+        alert('Você clicou no primeiro objeto!');
+      });
+    </script>
 </body>
