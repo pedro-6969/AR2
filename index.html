@@ -1,55 +1,68 @@
-<script src="https://cdn.jsdelivr.net/gh/aframevr/aframe@1c2407b26c61958baa93967b5412487cd94b290b/dist/aframe-master.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/aframevr/aframe@1.5.0/dist/aframe.min.js"></script>
 <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
 
 <style>
-  .arjs-loader {
-    height: 100%;
-    width: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
-    background-color: rgba(0, 0, 0, 0.8);
-    z-index: 9999;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-
-  .arjs-loader div {
-    text-align: center;
-    font-size: 1.25em;
-    color: white;
-  }
+  .arjs-loader{height:100%;width:100%;position:absolute;top:0;left:0;background:rgba(0,0,0,.8);z-index:9999;display:flex;justify-content:center;align-items:center}
+  .arjs-loader div{color:#fff;font-size:1.1em;text-align:center}
 </style>
 
+<body style="margin:0; overflow:hidden">
+  <div class="arjs-loader" id="loader"><div>Loading, please wait...</div></div>
 
-<body style="margin : 0px; overflow: hidden;">
-  <!-- minimal loader shown until image descriptors are loaded -->
-  <div class="arjs-loader">
-    <div>Loading, please wait...</div>
-  </div>
   <a-scene
-    vr-mode-ui="enabled: false;"
-    renderer="logarithmicDepthBuffer: true;"
+    vr-mode-ui="enabled:false"
+    renderer="logarithmicDepthBuffer:true"
     embedded
-    arjs="trackingMethod: best; sourceType: webcam;debugUIEnabled: false;"
+    arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled:false;"
   >
+    <!-- Cursor + Raycaster: obrigatórios para clique -->
+    <!-- mouse: funciona no desktop; em mobile, o toque também dispara 'click' -->
+    <a-entity id="mouse-cursor"
+      cursor="rayOrigin: mouse"
+      raycaster="objects: .clickable; far: 20000; recursive: true">
+    </a-entity>
 
-  
-    <a-nft
-  type="nft"
-  url="https://diogopcs.github.io/AR2/foto/foto"
-  smooth="true"
-  smoothCount="10"
-  smoothTolerance=".01"
-  smoothThreshold="5"
->
-  <a-entity
-    gltf-model="https://diogopcs.github.io/AR2/foto/scene.gltf"
-    scale="1 1 1"
-    position="50 50 0">
-  </a-entity>
-</a-nft>
+    <!-- Câmera -->
     <a-entity camera></a-entity>
+
+    <!-- Alvo NFT -->
+    <a-nft
+      type="nft"
+      url="https://diogopcs.github.io/AR2/foto/foto"
+      smooth="true" smoothCount="10" smoothTolerance=".01" smoothThreshold="5"
+    >
+      <!-- Modelo: adicione class=clickable -->
+      <a-entity id="primeiro"
+        class="clickable"
+        gltf-model="https://diogopcs.github.io/AR2/foto/scene.gltf"
+        position="50 50 0"
+        scale="1 1 1"
+        crossorigin="anonymous">
+      </a-entity>
+    </a-nft>
   </a-scene>
+
+  <script>
+    // Esconde o loader quando o vídeo/AR estiver pronto
+    document.querySelector('a-scene').addEventListener('arjs-video-loaded', () => {
+      const loader = document.getElementById('loader');
+      if (loader) loader.style.display = 'none';
+    });
+
+    const primeiro = document.getElementById('primeiro');
+
+    // Garanta que o mesh foi carregado antes de ouvir cliques
+    primeiro.addEventListener('model-loaded', () => {
+      // Agora o raycaster consegue intersectar os submeshes
+      primeiro.addEventListener('click', (e) => {
+        alert('Você clicou no primeiro objeto!');
+        // Ex.: acessar ponto de interseção:
+        // console.log(e.detail.intersection);
+      });
+    });
+
+    // (Opcional) feedback visual de hover
+    primeiro.addEventListener('mouseenter', () => { primeiro.setAttribute('scale', '1.05 1.05 1.05'); });
+    primeiro.addEventListener('mouseleave', () => { primeiro.setAttribute('scale', '1 1 1'); });
+  </script>
 </body>
