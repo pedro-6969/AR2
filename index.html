@@ -1,4 +1,4 @@
-<script src="https://cdn.jsdelivr.net/gh/aframevr/aframe@1c2407b26c61958baa93967b5412487cd94b290b/dist/aframe-master.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/aframevr/aframe@1.5.0/dist/aframe.min.js"></script>
 <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
 
 <style>
@@ -22,34 +22,54 @@
   }
 </style>
 
-
 <body style="margin : 0px; overflow: hidden;">
-  <!-- minimal loader shown until image descriptors are loaded -->
   <div class="arjs-loader">
     <div>Loading, please wait...</div>
   </div>
+
   <a-scene
     vr-mode-ui="enabled: false;"
     renderer="logarithmicDepthBuffer: true;"
     embedded
-    arjs="trackingMethod: best; sourceType: webcam;debugUIEnabled: false;"
+    arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;"
   >
+    <!-- Raycaster para detectar o clique -->
+    <a-entity camera look-controls>
+      <a-cursor 
+        id="cursor"
+        fuse="false"
+        raycaster="objects: .clickable"
+        material="color: yellow; shader: flat">
+      </a-cursor>
+    </a-entity>
 
-  
     <a-nft
-  type="nft"
-  url="https://diogopcs.github.io/AR2/foto/foto"
-  smooth="true"
-  smoothCount="10"
-  smoothTolerance=".01"
-  smoothThreshold="5"
->
-  <a-entity
-    gltf-model="https://diogopcs.github.io/AR2/foto/scene.gltf"
-    scale="1 1 1"
-    position="50 50 0">
-  </a-entity>
-</a-nft>
-    <a-entity camera></a-entity>
+      type="nft"
+      url="https://diogopcs.github.io/AR2/foto/foto"
+      smooth="true"
+      smoothCount="10"
+      smoothTolerance=".01"
+      smoothThreshold="5"
+    >
+      <!-- Modelo com classe 'clickable' -->
+      <a-entity
+        id="modelo3d"
+        class="clickable"
+        gltf-model="https://diogopcs.github.io/AR2/foto/scene.gltf"
+        scale="1 1 1"
+        position="50 50 0"
+      ></a-entity>
+    </a-nft>
   </a-scene>
+
+  <script>
+    // Quando o modelo for clicado
+    document.addEventListener('DOMContentLoaded', () => {
+      const modelo = document.querySelector('#modelo3d');
+      modelo.addEventListener('click', function (evt) {
+        console.log('Modelo 3D clicado!', evt.detail.intersection);
+        alert('Você clicou no modelo 3D!');
+      });
+    });
+  </script>
 </body>
