@@ -27,6 +27,8 @@
     <div>Loading, please wait...</div>
   </div>
 
+  <!-- LINK PARA MAPEAR O A FOTO  -->
+   <!-- https://carnaux.github.io/NFT-Marker-Creator/#/ -->
   <a-scene
     vr-mode-ui="enabled: false;"
     renderer="logarithmicDepthBuffer: true;"
@@ -67,7 +69,7 @@
     document.addEventListener('DOMContentLoaded', () => {
       const modelo = document.querySelector('#modelo3d');
       modelo.addEventListener('click', function (evt) {
-        console.log('Modelo 3D clicado!', evt.detail.intersection);
+        console.log('Modelo 3D clicado!', evt.detail.intrersection);
         alert('Você clicou no modelo 3D!');
       });
     });
