@@ -46,10 +46,37 @@
   smoothThreshold="5"
 >
   <a-entity
+    id="fantasma"
     gltf-model="https://diogopcs.github.io/AR2/foto/scene.gltf"
     scale="1 1 1"
-    position="50 50 0">
+    position="10 10 0">
   </a-entity>
 </a-nft>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const modelo = document.querySelector('#fantasma');
+
+    modelo.addEventListener('click', () => {
+      alert('Fantasma capturado!');
+
+      // Envia informação para o banco
+      registrarCaptura('Fantasma capturado');
+    });
+  });
+
+  function registrarCaptura(mensagem) {
+    // Aqui enviaremos a informação para o servidor
+    fetch('https://seu-servidor.com/api/capturas', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        mensagem: mensagem,
+        timestamp: new Date().toISOString()
+      })
+    })
+    .then(res => console.log('Enviado com sucesso:', res.status))
+    .catch(err => console.error('Erro ao enviar:', err));
+  }
+</script>
     <a-entity camera></a-entity>
   </a-scene>
