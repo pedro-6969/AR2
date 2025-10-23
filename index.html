@@ -5,78 +5,61 @@
   .arjs-loader {
     height: 100%;
     width: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
-    background-color: rgba(0, 0, 0, 0.8);
-    z-index: 9999;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    position: absolute; top: 0; left: 0;
+    background-color: rgba(0,0,0,0.8);
+    z-index: 9999; display: flex; justify-content: center; align-items: center;
   }
-
-  .arjs-loader div {
-    text-align: center;
-    font-size: 1.25em;
-    color: white;
-  }
+  .arjs-loader div { text-align: center; font-size: 1.25em; color: white; }
 </style>
 
-<!-- https://carnaux.github.io/NFT-Marker-Creator/#/ -->
+<body style="margin:0; overflow:hidden;">
+  <div class="arjs-loader"><div>Loading, please wait...</div></div>
 
-<body style="margin : 0px; overflow: hidden;">
-  <!-- minimal loader shown until image descriptors are loaded -->
-  <div class="arjs-loader">
-    <div>Loading, please wait...</div>
-  </div>
   <a-scene
-    vr-mode-ui="enabled: false;"
-    renderer="logarithmicDepthBuffer: true;"
+    vr-mode-ui="enabled: false"
+    renderer="logarithmicDepthBuffer: true"
     embedded
-    arjs="trackingMethod: best; sourceType: webcam;debugUIEnabled: false;"
+    arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;"
   >
-
-  
+    <!-- MARCADOR NFT -->
     <a-nft
-  type="nft"
-  url="https://diogopcs.github.io/AR2/foto/foto"
-  smooth="true"
-  smoothCount="30"
-  smoothTolerance="0.05"
-  smoothThreshold="10"
->
-  <a-entity
-    id="fantasma"
-    gltf-model="https://diogopcs.github.io/AR2/foto/scene.gltf"
-    scale="0.5 0.5 0.5"
-    position="0 0 0">
-  </a-entity>
-</a-nft>
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const modelo = document.querySelector('#fantasma');
+      type="nft"
+      url="https://diogopcs.github.io/AR2/foto/foto"
+      smooth="true" smoothCount="10" smoothTolerance=".01" smoothThreshold="5"
+    >
+      <!-- ENVOLVA O MODELO EM UMA ENTIDADE COM A CLASSE 'clickable' -->
+      <a-entity id="personagem" class="clickable"
+        gltf-model="https://diogopcs.github.io/AR2/foto/scene.gltf"
+        scale="1 1 1"
+        position="50 50 0">
+      </a-entity>
+    </a-nft>
 
-    modelo.addEventListener('click', () => {
-      alert('Fantasma capturado!');
-
-      // Envia informação para o banco
-      registrarCaptura('Fantasma capturado');
-    });
-  });
-
-  function registrarCaptura(mensagem) {
-    // Aqui enviaremos a informação para o servidor
-    fetch('https://seu-servidor.com/api/capturas', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        mensagem: mensagem,
-        timestamp: new Date().toISOString()
-      })
-    })
-    .then(res => console.log('Enviado com sucesso:', res.status))
-    .catch(err => console.error('Erro ao enviar:', err));
-  }
-</script>
-    <a-entity camera></a-entity>
+    <!-- CÂMERA + CURSOR/RAYCASTER -->
+    <!-- rayOrigin: mouse permite clicar/toque na tela; o raycaster só acerta objetos com a classe configurada -->
+    <a-entity camera look-controls="enabled: false">
+      <a-cursor
+        raycaster="objects: .clickable; far: 1000;"
+        cursor="fuse: false; rayOrigin: mouse">
+      </a-cursor>
+    </a-entity>
   </a-scene>
+
+  <script>
+    // Quando o GLTF terminar de carregar, anexamos os eventos de clique/toque
+    const alvo = document.getElementById('personagem');
+
+    // Se quiser garantir que a malha está pronta:
+    alvo.addEventListener('model-loaded', () => {
+      // Clique com mouse (desktop) ou toque (mobile) via raycaster
+      alvo.addEventListener('click', () => {
+        alert('Você clicou no personagem!');
+      });
+
+      // Fallback extra para alguns navegadores móveis
+      alvo.addEventListener('touchstart', () => {
+        alert('Você tocou no personagem!');
+      }, { passive: true });
+    });
+  </script>
+</body>
